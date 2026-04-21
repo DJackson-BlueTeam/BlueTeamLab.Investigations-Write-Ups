@@ -21,10 +21,10 @@
 ![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/6f96b6d72f350bceb6bf5870b9af915ea169f451/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/2..png)
 
 ![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/6f96b6d72f350bceb6bf5870b9af915ea169f451/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/2.1.png)
-  
+
 3. The SHA256 hash of a file was detected and quarantined on one of the Executives old android phones. We are trying to work out what this file does so we can take next steps. The hash value is 6461851c092d0074150e4e56a146108ae82130c22580fb444c1444e7d936e0b5. Is this file associated with malware? If so, what is the malware name? (as stated by Malware Bazaar)
 - With the hash that was provided, I was able to `cat` the `SHA256.csv` file and grep the hash value
-  
+
 ![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/6f96b6d72f350bceb6bf5870b9af915ea169f451/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/3.1.png)
 
 - In the 10th cloumn you can see a which seems to be malicious file that was executed in the host machine.
@@ -34,18 +34,49 @@
 
 ![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/6f96b6d72f350bceb6bf5870b9af915ea169f451/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/3..png)
 
+4. Investigate the reference link for this SHA256 hash value. Submit the threat name (acronym only), the C2 domain, IP, and the domain registrar.
+- The link that was in the Q3 had a twitter link attached to the SHA256 hashvalue
+
+![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/6f96b6d72f350bceb6bf5870b9af915ea169f451/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/3.1.png)
+
+- The link then directed to to a twitter post by `@onecert_ir`
+
+![alt](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/748f9264f62917944bb6dc1cac39f3028b91612e/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/4..png)
 
 
-5. Investigate the reference link for this SHA256 hash value. Submit the threat name (acronym only), the C2 domain, IP, and the domain registrar.
-6. Visit https://www.joesandbox.com/analysis/1319345/1/html. Investigate the MITRE ATT&CK Matrix to understand the Collection activities this file can take, and what the potential impact is to the Executives work mobile phone. Submit the 5 Technique names in alphabetical order.
-7. A junior analyst was handling an event that involved outbound connections to a private address and didn't perform any further analysis on the IP. What are the two ports used by the IP 192.236.198.236?
-8. Use the reference to help you further research the IP. What is the C2 domain?
-9. What is the likely delivery method into our organization? Provide the Technique name and Technique ID from ATT&CK.
-10. Investigate further and try to find the name of the weaponized Word document, so we can use our EDR to check if it is present anywhere else within the organization.
-11. What is the name of the .JAR file dropped by the Word document?
-12. A junior analyst was handling an event that involved outbound connections to a private address and didn't perform any further analysis on the IP. What are the two ports used by the IP 192.236.198.236?
-13. Looking at all export files, how many rows reference this URL? (include duplicates).
-14. Based on this information, what is the name of the malware family that is being widely distributed via Discord?
-15. We can proactively use indicators from threat feeds for detection, or for prevention via blocking. When it comes to blocking indicators, it is crucial that they are from a reputable source and have a high level of confidence to prevent blocking legitimate entities. How many rows in the full_urls.csv have a confidence rating of 100, and would likely be safe to block on the web proxy?
-16. An analyst has reported activity coming from an IP address using source port 8001, but they don't understand what this IP is trying to achieve. Looking at full_ip-port.csv in Gnumeric, filter on malware_printable = Unknown malware, and find an IP that is using port 8001. What is the IP address value?
-17. Investigating the reference material, what is the CVE ID of the vulnerability that this IP has been trying to exploit? And what is the industry nickname for this vulnerability?
+
+5. Visit https://www.joesandbox.com/analysis/1319345/1/html. Investigate the MITRE ATT&CK Matrix to understand the Collection activities this file can take, and what the potential impact is to the Executives work mobile phone. Submit the 5 Technique names in alphabetical order.
+
+![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/748f9264f62917944bb6dc1cac39f3028b91612e/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/5..png)
+
+![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/748f9264f62917944bb6dc1cac39f3028b91612e/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/5.1.png)
+
+6. A junior analyst was handling an event that involved outbound connections to a private address and didn't perform any further analysis on the IP. What are the two ports used by the IP 192.236.198.236?
+- To figure out the port that used by IP 192[.]236[.]198[.]236, I used `cat` to read the `full_ip-port.csv` and grep for the ip address and with the colon `192.236.198.236:`
+
+![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/748f9264f62917944bb6dc1cac39f3028b91612e/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/6..png)
+
+![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/748f9264f62917944bb6dc1cac39f3028b91612e/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/6.1.png)
+
+
+7. Use the reference to help you further research the IP. What is the C2 domain?
+  - The reference we will be using it the IP `192.236.198.236` in virus total.
+  - Using virus total will inform us is the ip address have malicious activities associatd with it.
+
+![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/748f9264f62917944bb6dc1cac39f3028b91612e/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/7..png)
+
+![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/748f9264f62917944bb6dc1cac39f3028b91612e/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/7.1.png)
+
+8. What is the likely delivery method into our organization? Provide the Technique name and Technique ID from ATT&CK.
+  - Since we know that IRATA was a malicious file that uses phishing tactics, I would conclude that the delivery method was Phishing T1566
+[MITRE ATT&CK](https://attack.mitre.org/techniques/T1566/)
+
+
+13. Investigate further and try to find the name of the weaponized Word document, so we can use our EDR to check if it is present anywhere else within the organization.
+14. What is the name of the .JAR file dropped by the Word document?
+15. A junior analyst was handling an event that involved outbound connections to a private address and didn't perform any further analysis on the IP. What are the two ports used by the IP 192.236.198.236?
+16. Looking at all export files, how many rows reference this URL? (include duplicates).
+17. Based on this information, what is the name of the malware family that is being widely distributed via Discord?
+18. We can proactively use indicators from threat feeds for detection, or for prevention via blocking. When it comes to blocking indicators, it is crucial that they are from a reputable source and have a high level of confidence to prevent blocking legitimate entities. How many rows in the full_urls.csv have a confidence rating of 100, and would likely be safe to block on the web proxy?
+19. An analyst has reported activity coming from an IP address using source port 8001, but they don't understand what this IP is trying to achieve. Looking at full_ip-port.csv in Gnumeric, filter on malware_printable = Unknown malware, and find an IP that is using port 8001. What is the IP address value?
+20. Investigating the reference material, what is the CVE ID of the vulnerability that this IP has been trying to exploit? And what is the industry nickname for this vulnerability?
