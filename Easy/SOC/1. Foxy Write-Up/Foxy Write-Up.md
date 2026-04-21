@@ -3,7 +3,7 @@
 
 ## As an Intelligence  Analyst you are tasked with assisting the SOC Analyst with their investigations, providing additional context and information.
 
-1. The SOC recently observed network connections from 3 internal hosts towards hxxp://45.63.126[.]199/dot.gif (URL has been sanitized). What is this activity likely related to?
+**1. The SOC recently observed network connections from 3 internal hosts towards hxxp://45.63.126[.]199/dot.gif (URL has been sanitized). What is this activity likely related to?**
   - I had to read the `.csv` file with `cat` and also used `grep` to by piping `|` it to only look for information with the ip `45[.]63[.]126[.]199`
   - ![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/1d6f64aa67a9bb2ad1bcfaf0828744be00959155/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/1..png)
   - I was able to get a return, observe that there was a malicious tool "Cobalt Strike": which can be used as a penetration tool.
