@@ -128,7 +128,9 @@
 **16. Investigating the reference material, what is the CVE ID of the vulnerability that this IP has been trying to exploit? And what is the industry nickname for this vulnerability?**
 
 - In Q15, we can see name log4j that is linked to the CVE-2021-44228.
+
 ![alt text](https://github.com/DJackson-BlueTeam/BlueTeamLab.Investigations-Write-Ups/blob/86e14377be1bf6464c52a67be0e0b2cc51c02dcb/Easy/SOC/1.%20Foxy%20Write-Up/Foxy/15..png)
+
 - So I search for log4j
 - and the Industry Nickname is LogShell
 
