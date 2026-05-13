@@ -1,87 +1,125 @@
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/z-ero.png)
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/fungames.png)
 
-#### You’re a CRISIS responder deployed to the Zeta-9 Bio-Tech facility.
-#### Mission: 
-#### Use Graylog to analyze the Project-Z edge device and confirm whether a breach has occurred. Uncover how it happened — and why. Good luck, responder. The fate of Zeta-9 and possibly the world may depend on what you find.
+### FunGames is an e-commerce platform for video games owned by FunTech Inc. and has become the target of a criminal who managed to obtain access credentials and exfiltrate some sensitive data. FunTech analysts provide the fugames.pcap file to analyze and retrieve all the pieces of information about the attack.
 
 ## Scenario
 
-#### Deep beneath the city, Zeta-9 Corporation’s secret bioweapon project went catastrophically wrong after an explosion released a mind-altering virus into the wild. The company covered it up as a “minor fire,” but leaked internal files from a mysterious hacktivist group told another story — one of containment failure and stolen research. Now, all contact with the facility is lost. As part of Zeta-9’s elite CRISIS unit, you’re deployed on-site to investigate the breach. The complex is silent — lights flicker, systems are offline, and something feels off. Your first task: access your C.R.I.S.I.S workstation. A briefing document on your desktop may provide more information... For this challenge, a GrayLog server is available at: URL: http://localhost:9000 Credentials: admin / Password A config file was obtained and is available at: /home/ubuntu/Documents/backup/backup.conf WARNING: graylog can take a few minutes to load!
+#### FunGames is an e-commerce platform for video games owned by FunTech Inc. and has become the target of a criminal who managed to obtain access credentials and exfiltrate some sensitive data. FunTech analysts provide the fugames.pcap file to analyze and retrieve all the pieces of information about the attack.
 
-#### Investigation Questions
+### Investigation Question
 
-**1. What is the vendor of the Project Z firewall?**
+**1. What is the IP address of the attacker who is performing the attack?**
 
-- Looking through the logs in Ubuntu, I seen a Firewall name "FortiFirewall" and look up the potential "Company". 
+- To get the ip address of the victim in wireshark, I filtered for `SYN` and `ACK` flag in Wireshark.
+- `tcp.flags.syn == 1 && tcp.flags.ack == 0`
+- Below shows continue communication between the source ip and the destination ip during the 3 way hand-shake.
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/2cf4defd991f8d1f2005a836270dc9967f4f4718/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/1..png)
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/1..png)
 
-**2. What is the firmware version is running on the firewall?**
+Answer: 192.168.8.130
 
-- I grep for version and got results 
+**2. What is the IP address of the victim?**
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/2..png)
+- In the same filter, we can see the victims ip address that is responding to the adversary.
+ 
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/2..png)
 
-Answer: 7.0.14
 
-**3. The firewall has an administrative user what is their username?**
-- I used `-i` since I was not sure if `user` was capitalized or not.
+Answer: 192.168.8.142
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/3..png)
+**3. Which attack was performed by the attacker?**
 
-Answer: admin
+- I filter for `http.request.method == "GET"` to observe what request the adversary was making through the network.
+- I stopped at packet 1319 and notice there was a sql user-agent.
+- When an adversary performing sql queries for malicious reasons, its an indicator that the adversary is conducting SQL injections. 
 
-**4. Recently, the Project Z network has been unstable. The IT team suspects a possible breach. Can you identify if there is any CVE with a public exploit that could compromise the edge device?**
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/3..png)
+ 
+ Answer: SQLi
+ 
+**4. It seems the attacker used a famous tool to perform the attack.**
 
-- This question needed a little OSINT routine.
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/4..png)
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/4..png)
+- SQLmap is a tool used for penetration purposes that automates process of detecting and exploiting SQL injections
 
-Answer: CVE-20025-55591
+Answer: SQLMAP
 
-**5. A threat actor attempted to access the management console. What is the attacker’s IP address?**
+**5. In one of the packets, it is possible to view the victim's username and password.**
 
-- I grep for ssh and notice a ping request was made.
-- Usually when a ping request is executed, is comes from the ip address that attempting to connect to another ip.
-- In this case it was the adversary making the ping request.
+- I was combing through the OK responses since they were human readable text outputs in html format.
+- I notice there was a sql query formate followed by some outputs in the next text/html output.
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/5..png)
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/5.1.png)
 
-Answer: 38.68.134.215
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/5.2.png)
 
-**6. There have been VPN connection attempts. Which user successfully established a connection?**
+- I opened my note and copied the format in the first screenshot and the second screenshot and "carved-out" the results shown below.
+ 
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/5.3.png)
 
-- The ip had to be similar to the ip of the ip that attempted the access management console. 
-- So I pulled all ip's for the config.file "backup.txt" (I coverted it to readable text by decoding the base64).
+- By doing so, I was able to pull the username and password of the victim. 
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/6..png)
+Answer: mjarovic, Ma77.J@r0v1c-2024
 
-Answer: 38.68.134.103 (I put what was in the screenshot, maybe the were a minor malfunction within the investigation environment since it is a RETIRED system.)
+**6. Once the attacker obtained the victim's credentials he accessed the system via SSH. To gain root privileges, they transferred a file to the victim's machine. What is the name of the file?**
 
-**7. A specific user added the successful VPN user, what is the users name?**
+- I was still in the filter of `http && 192.168.8.142` to maintain the pattern of the adversary malicious activities. 
+- I notice a text/html exploit file in the "GET" protocol
 
-- I spent alot of time trying to find the user, but kept running into dead ends, so I went to the interface of graylog and pulled the results.
-- Evidently, all of the information that was on the GUI interface was not logged in the backup.conf file.
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/5.4.png)
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/8..png)
-Answer: zeta_admin
+Answer: Exploit
 
-**8. What is the source IP address used during the VPN connection?**
+**7. What is the sha256 hash of the file above?**
+- Here I exported the file from Wireshark and save it in the ubuntu directory.
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/8.%201.png)
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/6.1.png)
 
-Answer: 10.1.1.10
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/6.2.png)
 
-**9. Which internal Zeta-9 IP address was the attacker scanning?**
+- Then, I was able to extract the malicious file SHA256 hash value.
 
-- grep for ping again and got the results on the zeta9 ip.
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/6.3.png)
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/9..png)
-Answer: 192.168.86.1
+**8. With which CVE is this type of vulnerability identified?**
+- I had uploaded the hashvalue to VirusTotal and observing the data. 
+- There was a CVE documented on the hashvalue through the community.
 
-**10. Which ports was the attacker mainly interested in discovering on the internal network?**
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/6.4.png)
 
-- I had a similar issue with searching through the .conf file that was coverted to .txt for readable purposes and couldn't get the ports I end up discovering through the GUI interface of Graylogs.
-- I created a Aggregation Chart with the number of time the dstport was accessed from an ip.
+Answer: CVE-2024-1086
 
-![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/e78587686a77985fe6a314eb7a28eaf848c8f3ce/BLTO-Lab-Investigations/Easy/Incident%20Response/PATIENT%20Z-ERO/PATIENT%20Z-ERO%20IMG/10..png)
+**9. After obtaining root privileges, it seems that the attacker exfiltrated sensitive data without transferring any files. Provide the string related to this data.**
+
+- This took me a minute to get to.
+- after conducting some research on data exfiltration without a file transfer, I was able to discover that data can be trasnferred through dns "tunneling" and ssh protocol. 
+- I filtered for dns and notice a "Malformed Packet"
+- This indicates that the packet was too large for wireshark to hold show the display of the packet showed as an error.
+
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/6.5.png)
+
+- I had copy the hex string, since thee question was only asking for the string of the data. 
+
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/6.6.png)
+
+Answer: j4672616e6b204d696c6c7320313233343536373839313233343536372065787020646174652030382f32382063767620313233200a
+
+**10. It seems that the string has been encoded. What data did the attacker manage to obtain through exfiltration?**
+
+- I used CyberChef to decode the string. 
+- In return, the adversary was able to retrieve a card information for the victim.
+
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/7.1.png)
+
+Answer: Frank Mills 1234567891234567 exp date 08/28 cvv 123
+
+**11. Provide the Mitre ID of this technique—in regard to the previous question.**
+
+- Based on the previous question, I did perform some research in regards to the stealth activity of the adversary and discover a MITRE ATT&CK technique. 
+
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/7.2.png)
+
+Answer: T1071.004
+
+![alt text](https://github.com/DJackson-BlueTeam/90-Day-Junior-Analyst-Sprint/blob/4cfd6c2542257be510b7f55ce11a68b445bbbc20/BLTO-Lab-Investigations/Easy/Security-Operations/FunGames/FunGamesImg/7.3.png)
